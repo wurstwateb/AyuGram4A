@@ -41,16 +41,12 @@ jobs:
       - name: Install NDK r21e (required by this project).
         run: sdkmanager --install "ndk;21.4.7075529" "cmake;3.22.1"
 
-      - name: Generate signing keystore.
+      - name: Verify signing keystore.
         run: |
-          mkdir -p TMessagesProj/config
-          rm -f TMessagesProj/config/extera.jks
-          keytool -genkeypair -v \
-            -keystore TMessagesProj/config/extera.jks \
-            -alias ayugramce -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass ayugramce -keypass ayugramce \
-            -dname "CN=AyuGram Community Edition, OU=Community, O=Community, L=NA, ST=NA, C=US"
-          echo "keystore created:"; ls -la TMessagesProj/config/
+          # The keystore is committed so every build is signed with the SAME key,
+          # which lets new APKs install over previous ones as updates.
+          keytool -list -keystore TMessagesProj/config/extera.jks -storepass ayugramce
+          ls -la TMessagesProj/config/
 
       - name: Write API_KEYS.
         run: |
